@@ -18,7 +18,11 @@ export default function App() {
   return (
     <ShaderTransitionContextProvider>
       <NavigationContainer>
-        <Tab.Navigator tabBar={(props) => <TabBar {...props} />}>
+        <Tab.Navigator
+          // screenOptions={{ lazy: false }}
+          screenOptions={{ headerShown: false }}
+          tabBar={(props) => <TabBar {...props} />}
+        >
           <Tab.Screen name="Home" component={HomeScreen} />
           <Tab.Screen name="Second" component={SecondScreen} />
           <Tab.Screen name="Third" component={ThirdScreen} />

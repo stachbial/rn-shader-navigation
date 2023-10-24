@@ -1,11 +1,16 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useShaderTransitionContext } from "../context/ShaderTransitionContext";
 
+// https://reactnavigation.org/docs/bottom-tab-navigator#tabbar
 const TabBar: React.FC<BottomTabBarProps> = ({
   state,
   descriptors,
   navigation,
 }) => {
+  const { setBaseTexture, isAnimating, setTargetTexture } =
+    useShaderTransitionContext();
+
   return (
     <View
       style={{
@@ -26,7 +31,12 @@ const TabBar: React.FC<BottomTabBarProps> = ({
 
         const isFocused = state.index === index;
 
-        const onPress = () => {
+        const wait = async (ms: number) =>
+          new Promise((resolve) => setTimeout(resolve, ms));
+
+        const onPress = async () => {
+          if (isAnimating || isFocused) return;
+          await setBaseTexture();
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,
@@ -36,6 +46,8 @@ const TabBar: React.FC<BottomTabBarProps> = ({
           if (!isFocused && !event.defaultPrevented) {
             // The `merge: true` option makes sure that the params inside the tab screen are preserved
             navigation.navigate(route.name);
+            // await wait(16);
+            setTargetTexture();
           }
         };
 
